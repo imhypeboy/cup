@@ -44,22 +44,36 @@ const Hero = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.6 }}
       >
-        <motion.a
-          href="#projects"
-          className="bg-gray-900 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors text-center"
+        <motion.button
+          onClick={() => {
+            const element = document.getElementById('projects')
+            if (element) {
+              const headerHeight = 80
+              const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+              window.scrollTo({ top: elementPosition - headerHeight, behavior: 'smooth' })
+            }
+          }}
+          className="bg-gray-900 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           View Projects
-        </motion.a>
-        <motion.a
-          href="#blog"
-          className="bg-white text-gray-900 px-8 py-4 rounded-lg text-lg font-medium border-2 border-gray-900 hover:bg-gray-50 transition-colors text-center"
+        </motion.button>
+        <motion.button
+          onClick={() => {
+            const element = document.getElementById('blog')
+            if (element) {
+              const headerHeight = 80
+              const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+              window.scrollTo({ top: elementPosition - headerHeight, behavior: 'smooth' })
+            }
+          }}
+          className="bg-white text-gray-900 px-8 py-4 rounded-lg text-lg font-medium border-2 border-gray-900 hover:bg-gray-50 transition-colors"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           Read Blog
-        </motion.a>
+        </motion.button>
       </motion.div>
 
       {/* Social Links */}

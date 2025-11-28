@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 const Blog = () => {
+  const [selectedCategory, setSelectedCategory] = useState('All')
+
   const posts = [
     {
       id: 1,
@@ -54,8 +57,12 @@ const Blog = () => {
 
   const categories = ['All', 'React', 'TypeScript', 'Next.js', 'CSS', 'Animation', 'Performance']
 
+  const filteredPosts = selectedCategory === 'All' 
+    ? posts 
+    : posts.filter(post => post.category === selectedCategory)
+
   return (
-    <section id="blog" className="py-20 px-6">
+    <section id="blog" className="py-20 px-6 scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="text-center mb-16"
@@ -83,7 +90,13 @@ const Blog = () => {
           {categories.map((category) => (
             <button
               key={category}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-900 hover:text-white transition-colors"
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === category
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+              aria-label={`Filter by ${category}`}
             >
               {category}
             </button>
@@ -91,47 +104,56 @@ const Blog = () => {
         </motion.div>
 
         {/* Blog Posts */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post, index) => (
-            <motion.article
-              key={post.id}
-              className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow cursor-pointer group"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="px-3 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full">
-                  {post.category}
-                </span>
-                <span className="text-gray-500 text-xs">{post.date}</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
-                {post.title}
-              </h3>
-              <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                {post.excerpt}
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-500 text-xs">{post.readTime}</span>
-                <motion.a
-                  href="#"
-                  className="text-orange-600 font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all"
-                >
-                  Read more
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </motion.a>
-              </div>
-            </motion.article>
-          ))}
-        </div>
+        {filteredPosts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPosts.map((post, index) => (
+              <motion.article
+                key={post.id}
+                className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow cursor-pointer group"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="px-3 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full">
+                    {post.category}
+                  </span>
+                  <span className="text-gray-500 text-xs">{post.date}</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                  {post.title}
+                </h3>
+                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                  {post.excerpt}
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-500 text-xs">{post.readTime}</span>
+                  <motion.a
+                    href="#"
+                    className="text-orange-600 font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      // 실제 블로그 포스트 페이지로 이동하는 로직 추가 가능
+                      console.log('Read more:', post.id)
+                    }}
+                  >
+                    Read more
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </motion.a>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500">선택한 카테고리에 해당하는 포스트가 없습니다.</p>
+          </div>
+        )}
       </div>
     </section>
   )
 }
 
 export default Blog
-
