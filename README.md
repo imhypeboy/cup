@@ -1,17 +1,8 @@
 # Developer Portfolio & Blog
 
-hera.video 스타일을 참고하여 제작한 개발자 포트폴리오 및 블로그 웹사이트입니다.
+개발자 포트폴리오 및 블로그 웹사이트입니다.
 
-## 특징
-
-- **미니멀 디자인**: 깔끔한 흰색 배경과 다크 그레이 텍스트
-- **오렌지 액센트**: hera.video의 시그니처 오렌지-레드 색상
-- **부드러운 애니메이션**: Framer Motion을 활용한 인터랙티브 효과
-- **반응형 디자인**: 모바일, 태블릿, 데스크톱 지원
-- **포트폴리오 섹션**: 프로젝트 갤러리 및 기술 스택 소개
-- **블로그 섹션**: 개발 경험과 학습 내용 공유
-
-## 설치 및 실행
+## 🚀 빠른 시작
 
 ```bash
 # 의존성 설치
@@ -24,41 +15,55 @@ npm run dev
 npm run build
 ```
 
-## 기술 스택
+## 📦 기술 스택
 
 - **React 18** - UI 라이브러리
 - **Tailwind CSS 3** - 유틸리티 CSS 프레임워크
 - **Framer Motion** - 애니메이션 라이브러리
+- **React Router** - 라우팅
 - **Vite** - 빌드 도구
 
-## 주요 섹션
+## ✨ 주요 기능
 
-- **Hero**: 개발자 소개 및 소셜 링크
-- **About**: 자기소개 및 기술 스택 (진행률 표시)
-- **Projects**: 프로젝트 갤러리 (6개 프로젝트)
-- **Blog**: 블로그 포스트 목록 (카테고리 필터 포함)
-- **Contact**: 연락처 정보 및 문의 폼
+- **포트폴리오**: 프로젝트 갤러리 및 기술 스택 소개
+- **블로그**: 개발 경험과 학습 내용 공유
+- **인증 시스템**: 로그인, 회원가입, 비밀번호 찾기
+- **글 작성**: 로그인 후 블로그 포스트 작성
+- **반응형 디자인**: 모바일, 태블릿, 데스크톱 지원
 
-## 주요 컴포넌트
+## 📁 프로젝트 구조
 
-- `Header` - 상단 네비게이션 바 (스크롤 시 스타일 변경)
-- `Hero` - 메인 히어로 섹션
-- `About` - 자기소개 및 기술 스택
-- `Projects` - 프로젝트 갤러리
-- `Blog` - 블로그 포스트 목록
-- `Contact` - 연락처 및 문의 폼
-- `Footer` - 푸터 (소셜 링크)
+```
+src/
+├── pages/           # 페이지 컴포넌트
+│   ├── HomePage.jsx
+│   ├── LoginPage.jsx
+│   ├── SignupPage.jsx
+│   └── ForgotPasswordPage.jsx
+├── components/      # 재사용 가능한 컴포넌트
+│   ├── auth/       # 인증 관련
+│   ├── blog/       # 블로그 관련
+│   └── common/     # 공통 컴포넌트
+├── contexts/       # Context API
+│   └── AuthContext.jsx
+├── hooks/          # 커스텀 훅
+└── utils/          # 유틸리티 함수
+```
 
-## 커스터마이징
+## 🎯 주요 페이지
 
-각 컴포넌트의 내용을 수정하여 본인의 포트폴리오로 커스터마이징할 수 있습니다:
+- `/` - 홈 (포트폴리오)
+- `/login` - 로그인
+- `/signup` - 회원가입
+- `/forgot-password` - 비밀번호 찾기
 
-- `Hero.jsx`: 이름, 포지션, 소개 문구 수정
-- `About.jsx`: 자기소개 및 기술 스택 수정
-- `Projects.jsx`: 프로젝트 정보 수정
-- `Blog.jsx`: 블로그 포스트 내용 수정
-- `Contact.jsx`: 연락처 정보 수정
+## 🔧 커스터마이징
 
-## 참고
+각 컴포넌트의 내용을 수정하여 본인의 포트폴리오로 커스터마이징할 수 있습니다.
 
-이 프로젝트는 [hera.video](https://hera.video/) 웹사이트의 디자인을 참고하여 제작되었습니다.
+- `pages/HomePage.jsx`: 메인 페이지 레이아웃
+- `components/Hero.jsx`: 히어로 섹션
+- `components/About.jsx`: 자기소개 및 기술 스택
+- `components/Projects.jsx`: 프로젝트 정보
+- `components/Blog.jsx`: 블로그 포스트
+- `components/Contact.jsx`: 연락처 정보
