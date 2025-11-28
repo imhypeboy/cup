@@ -19,7 +19,10 @@ const Contact = () => {
       // 실제 API 호출로 대체 가능
       await new Promise(resolve => setTimeout(resolve, 1000)) // 시뮬레이션
       
-      console.log('Form submitted:', formData)
+      // 프로덕션에서는 logger 사용
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Form submitted:', formData)
+      }
       setSubmitStatus('success')
       setFormData({ name: '', email: '', message: '' })
       

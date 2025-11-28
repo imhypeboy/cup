@@ -1,10 +1,18 @@
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuth } from '../contexts/AuthContext'
+import { storageAPI } from '../utils/api'
+import BlogEditor from './blog/BlogEditor'
 
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState('All')
+  const [posts, setPosts] = useState([])
+  const [showEditor, setShowEditor] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const { isAuthenticated } = useAuth()
 
-  const posts = [
+  // 기본 포스트
+  const defaultPosts = [
     {
       id: 1,
       title: 'React 19의 새로운 기능들',
@@ -55,6 +63,31 @@ const Blog = () => {
     },
   ]
 
+  useEffect(() => {
+    loadPosts()
+  }, [])
+
+  const loadPosts = async () => {
+    setIsLoading(true)
+    try {
+      const response = await storageAPI.getPosts()
+      const savedPosts = response.data || []
+      setPosts([...savedPosts, ...defaultPosts])
+    } catch (error) {
+      // 에러 발생 시 기본 포스트만 표시
+      setPosts(defaultPosts)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to load posts:', error)
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handlePostCreated = () => {
+    loadPosts()
+  }
+
   const categories = ['All', 'React', 'TypeScript', 'Next.js', 'CSS', 'Animation', 'Performance']
 
   const filteredPosts = selectedCategory === 'All' 
@@ -71,9 +104,24 @@ const Blog = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Blog
-          </h2>
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
+              Blog
+            </h2>
+            {isAuthenticated && (
+              <motion.button
+                onClick={() => setShowEditor(true)}
+                className="bg-orange-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                글 작성
+              </motion.button>
+            )}
+          </div>
           <p className="text-lg text-gray-600">
             개발 경험과 학습 내용을 공유합니다
           </p>
@@ -103,8 +151,19 @@ const Blog = () => {
           ))}
         </motion.div>
 
-        {/* Blog Posts */}
-        {filteredPosts.length > 0 ? (
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white border border-gray-200 rounded-xl p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              </div>
+            ))}
+          </div>
+        ) : filteredPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredPosts.map((post, index) => (
               <motion.article
@@ -114,11 +173,14 @@ const Blog = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
               >
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-3 mb-3 flex-wrap">
                   <span className="px-3 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full">
                     {post.category}
                   </span>
                   <span className="text-gray-500 text-xs">{post.date}</span>
+                  {post.author && (
+                    <span className="text-gray-400 text-xs">by {post.author}</span>
+                  )}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
                   {post.title}
@@ -133,8 +195,9 @@ const Blog = () => {
                     className="text-orange-600 font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all"
                     onClick={(e) => {
                       e.preventDefault()
-                      // 실제 블로그 포스트 페이지로 이동하는 로직 추가 가능
-                      console.log('Read more:', post.id)
+                      if (post.content) {
+                        alert(`제목: ${post.title}\n\n내용:\n${post.content}`)
+                      }
                     }}
                   >
                     Read more
@@ -147,11 +210,23 @@ const Blog = () => {
             ))}
           </div>
         ) : (
+          // Empty State
           <div className="text-center py-12">
-            <p className="text-gray-500">선택한 카테고리에 해당하는 포스트가 없습니다.</p>
+            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p className="text-gray-500 text-lg mb-2">등록된 게시물이 없습니다</p>
+            <p className="text-gray-400 text-sm">선택한 카테고리에 해당하는 포스트가 없습니다.</p>
           </div>
         )}
       </div>
+
+      {/* Blog Editor Modal */}
+      <BlogEditor
+        isOpen={showEditor}
+        onClose={() => setShowEditor(false)}
+        onPostCreated={handlePostCreated}
+      />
     </section>
   )
 }

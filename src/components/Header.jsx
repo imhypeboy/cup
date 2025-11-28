@@ -1,12 +1,21 @@
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 const Header = () => {
+  const location = useLocation()
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { user, logout, isAuthenticated } = useAuth()
+  
+  // 홈 페이지가 아닐 때는 스크롤 감지 비활성화
+  const isHomePage = location.pathname === '/'
 
   useEffect(() => {
+    if (!isHomePage) return
+    
     const handleScroll = () => {
       setScrolled(window.scrollY > 20)
       
@@ -26,7 +35,7 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll)
     handleScroll() // 초기 실행
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [isHomePage])
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id)
@@ -52,29 +61,34 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <motion.a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
+          <Link
+            to="/"
+            onClick={() => {
+              if (isHomePage) {
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }
               setMobileMenuOpen(false)
             }}
             className="flex items-center gap-2"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
             aria-label="Home"
           >
-            <div className="flex gap-1">
-              <div className="w-6 h-6 bg-orange-600 rounded-sm"></div>
-              <div className="w-6 h-6 bg-orange-500 rounded-sm"></div>
-            </div>
-            <span className="text-xl font-semibold text-gray-900">Portfolio</span>
-          </motion.a>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-2"
+            >
+              <div className="flex gap-1">
+                <div className="w-6 h-6 bg-orange-600 rounded-sm"></div>
+                <div className="w-6 h-6 bg-orange-500 rounded-sm"></div>
+              </div>
+              <span className="text-xl font-semibold text-gray-900">Portfolio</span>
+            </motion.div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            {navItems.map((item, index) => {
+            {isHomePage && navItems.map((item, index) => {
               const itemId = item.toLowerCase()
               const isActive = activeSection === itemId
               return (
@@ -100,15 +114,27 @@ const Header = () => {
                 </motion.button>
               )
             })}
-            <motion.button
-              onClick={() => scrollToSection('contact')}
-              className="bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-            >
-              Get in Touch
-            </motion.button>
+            {isAuthenticated ? (
+              <>
+                <span className="text-sm text-gray-700">안녕하세요, {user.name}님</span>
+                <motion.button
+                  onClick={logout}
+                  className="bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                  로그아웃
+                </motion.button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className="bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+              >
+                로그인
+              </Link>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -138,7 +164,7 @@ const Header = () => {
             transition={{ duration: 0.2 }}
           >
             <div className="flex flex-col gap-4 pt-4">
-              {navItems.map((item) => {
+              {isHomePage && navItems.map((item) => {
                 const itemId = item.toLowerCase()
                 const isActive = activeSection === itemId
                 return (
@@ -153,12 +179,27 @@ const Header = () => {
                   </button>
                 )
               })}
-              <button
-                onClick={() => scrollToSection('contact')}
-                className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors mt-2"
-              >
-                Get in Touch
-              </button>
+              {isAuthenticated ? (
+                <>
+                  <div className="px-4 py-2 text-sm text-gray-700">
+                    안녕하세요, {user.name}님
+                  </div>
+                  <button
+                    onClick={logout}
+                    className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors mt-2"
+                  >
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors mt-2 text-center"
+                >
+                  로그인
+                </Link>
+              )}
             </div>
           </motion.nav>
         )}
