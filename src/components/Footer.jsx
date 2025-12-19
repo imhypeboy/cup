@@ -11,7 +11,7 @@ const Footer = () => {
               </div>
               <span className="text-lg font-semibold text-gray-900">Developer Portfolio</span>
             </div>
-            <p className="text-sm text-gray-500">Copyright © 2025</p>
+            <p className="text-sm text-gray-500">Copyright © 2025 Jong ho</p>
           </div>
 
           <div className="flex items-center gap-6">

@@ -15,21 +15,41 @@ const Contact = () => {
     setIsSubmitting(true)
     setSubmitStatus(null)
 
-    try {
-      // 실제 API 호출로 대체 가능
-      await new Promise(resolve => setTimeout(resolve, 1000)) // 시뮬레이션
-      
-      // 프로덕션에서는 logger 사용
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Form submitted:', formData)
-      }
-      setSubmitStatus('success')
-      setFormData({ name: '', email: '', message: '' })
-      
-      // 3초 후 상태 초기화
+    // 클라이언트 검증
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setSubmitStatus('error')
+      setIsSubmitting(false)
       setTimeout(() => {
         setSubmitStatus(null)
       }, 3000)
+      return
+    }
+
+    try {
+      // 실제 이메일 전송을 위해서는 백엔드 API가 필요합니다
+      // 현재는 이메일 클라이언트를 열어서 메일을 작성하도록 합니다
+      const subject = encodeURIComponent(`포트폴리오 문의: ${formData.name}`)
+      const body = encodeURIComponent(
+        `이름: ${formData.name}\n이메일: ${formData.email}\n\n메시지:\n${formData.message}`
+      )
+      const mailtoLink = `mailto:kangjh0205@gmail.com?subject=${subject}&body=${body}`
+      
+      // 개발 환경에서만 콘솔 로그
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Form submitted:', formData)
+        console.log('Mailto link:', mailtoLink)
+      }
+      
+      // 이메일 클라이언트 열기
+      window.location.href = mailtoLink
+      
+      setSubmitStatus('success')
+      setFormData({ name: '', email: '', message: '' })
+      
+      // 5초 후 상태 초기화
+      setTimeout(() => {
+        setSubmitStatus(null)
+      }, 5000)
     } catch (error) {
       setSubmitStatus('error')
       setTimeout(() => {
@@ -83,8 +103,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">Email</p>
-                  <a href="mailto:hello@example.com" className="text-gray-600 hover:text-orange-600 transition-colors">
-                    hello@example.com
+                  <a href="mailto:kangjh0205@gmail.com" className="text-gray-600 hover:text-orange-600 transition-colors">
+                    kangjh0205@gmail.com
                   </a>
                 </div>
               </div>
@@ -108,8 +128,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">GitHub</p>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-orange-600 transition-colors">
-                    github.com/username
+                  <a href="https://github.com/imhypeboy" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-orange-600 transition-colors">
+                    github.com/imhypeboy
                   </a>
                 </div>
               </div>
@@ -190,8 +210,8 @@ const Contact = () => {
                 }`}
               >
                 {submitStatus === 'success' 
-                  ? '✅ 메시지가 성공적으로 전송되었습니다!' 
-                  : '❌ 전송 중 오류가 발생했습니다. 다시 시도해주세요.'}
+                  ? '✅ 이메일 클라이언트가 열렸습니다. 메시지를 확인하고 전송해주세요.' 
+                  : '❌ 모든 필드를 입력해주세요.'}
               </motion.div>
             )}
 
