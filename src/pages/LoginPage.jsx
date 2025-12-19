@@ -67,7 +67,7 @@ const LoginPage = () => {
     >
     {/* Background image */}
     <img
-      src="/login-bg.jpg.png"
+      src="/login-bg.jpg"
       alt="Login background"
       className="absolute inset-0 w-full h-full object-cover"
     />
@@ -94,7 +94,7 @@ const LoginPage = () => {
 
           <h1 className="text-3xl font-bold mb-2 text-center">로그인</h1>
           <p className="text-sm md:text-base text-center text-gray-100/80 mb-6">
-            개발자의 꿈을 현실로 만들어 보세요.
+            포트폴리오와 개발 블로그에 오신 것을 환영합니다.
           </p>
 
           {!isOnline && (
