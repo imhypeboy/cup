@@ -5,9 +5,23 @@ const Projects = () => {
   const projects = [
     {
       id: 1,
-      title: 'E-Commerce Platform',
-      description: 'Next.js와 TypeScript로 구축한 풀스택 이커머스 플랫폼',
-      tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Stripe'],
+      title: '대학생 시간표/학사 일정 통합 웹 서비스',
+      description: '시간표, 학사 일정, 과목 관리를 하나의 흐름으로 통합한 웹 서비스',
+      summary: [
+        '반복적인 시간표 구성과 일정 관리 부담을 줄이는 사용자 중심 서비스',
+        '기획부터 개발, 배포까지 집중 수행한 단기 팀 프로젝트',
+      ],
+      role: [
+        '3인 팀 프로젝트에서 프론트엔드 개발 및 UI·UX 설계 전담',
+        '메인 페이지 구조 설계, 컴포넌트 분리, 상태 관리 구현',
+      ],
+      impact: [
+        '시간표 자동 생성 기능으로 사용자 입력 단계 간소화',
+        '인증 상태 기반 화면 제어 및 즉각적 피드백 UI 구성',
+        '기능 밀도가 높은 서비스에서도 화면 복잡도 최소화',
+      ],
+      period: '2025.07 – 2025.08',
+      tech: ['React', 'TypeScript', 'Tailwind CSS', 'Supabase'],
       color: 'bg-gradient-to-br from-purple-500 to-pink-500',
       link: '#',
     },
@@ -54,6 +68,7 @@ const Projects = () => {
   ]
 
   const [hoveredIndex, setHoveredIndex] = useState(null)
+  const [selectedProject, setSelectedProject] = useState(null)
 
   return (
     <section id="projects" className="py-20 px-6 bg-gray-50 scroll-mt-20">
@@ -84,7 +99,7 @@ const Projects = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
-              onClick={() => window.open(project.link, '_blank')}
+              onClick={() => setSelectedProject(project)}
             >
               {/* Project Image/Color */}
               <div className={`h-48 ${project.color} flex items-center justify-center relative overflow-hidden`}>
@@ -115,20 +130,107 @@ const Projects = () => {
                     </span>
                   ))}
                 </div>
-                <motion.a
-                  href={project.link}
+                <button
+                  type="button"
                   className="text-orange-600 font-medium text-sm flex items-center gap-2 group-hover:gap-3 transition-all"
-                  onClick={(e) => e.stopPropagation()}
                 >
-                  View Project
+                  View Details
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
-                </motion.a>
+                </button>
               </div>
             </motion.div>
           ))}
         </div>
+
+        {/* Project Detail Overlay */}
+        {selectedProject && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedProject(null)}
+          >
+            <motion.div
+              className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] overflow-y-auto p-8"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.25 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-start gap-4 mb-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    {selectedProject.title}
+                  </h3>
+                  {selectedProject.period && (
+                    <p className="text-sm text-gray-500">{selectedProject.period}</p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProject(null)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="닫기"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-6 text-sm text-gray-700">
+                <div>
+                  <h4 className="font-semibold mb-2">요약</h4>
+                  <ul className="list-disc list-inside space-y-1">
+                    {(selectedProject.summary || [selectedProject.description]).map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                {selectedProject.role && (
+                  <div>
+                    <h4 className="font-semibold mb-2">역할</h4>
+                    <ul className="list-disc list-inside space-y-1">
+                      {selectedProject.role.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {selectedProject.impact && (
+                  <div>
+                    <h4 className="font-semibold mb-2">성과</h4>
+                    <ul className="list-disc list-inside space-y-1">
+                      {selectedProject.impact.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div>
+                  <h4 className="font-semibold mb-2">기술 스택</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProject.tech.map((tech) => (
+                      <span
+                        key={tech}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </div>
     </section>
   )

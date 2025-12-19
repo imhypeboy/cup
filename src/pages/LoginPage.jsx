@@ -62,34 +62,49 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+    <div
+      className="relative min-h-screen flex items-center justify-center md:justify-end px-4 py-12 overflow-hidden bg-slate-900"
+    >
+    {/* Background image */}
+    <img
+      src="/login-bg.jpg.png"
+      alt="Login background"
+      className="absolute inset-0 w-full h-full object-cover"
+    />
+
+      {/* Dark gradient overlay for better contrast */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-black/10" />
+
       <motion.div
-        className="w-full max-w-md"
+        className="relative z-10 w-full max-w-md md:mr-16"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        {/* Glassmorphism card */}
+        <div className="rounded-2xl border border-white/15 bg-white/3 backdrop-blur-3xl shadow-[0_24px_80px_rgba(0,0,0,0.6)] p-8 text-white">
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-8">
             <div className="flex gap-1">
-              <div className="w-6 h-6 bg-orange-600 rounded-sm"></div>
               <div className="w-6 h-6 bg-orange-500 rounded-sm"></div>
+              <div className="w-6 h-6 bg-orange-400 rounded-sm"></div>
             </div>
-            <span className="text-xl font-semibold text-gray-900">Portfolio</span>
+            <span className="text-xl font-semibold">Portfolio</span>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">로그인</h1>
-          <p className="text-gray-600 mb-6 text-center">계정에 로그인하세요</p>
+          <h1 className="text-3xl font-bold mb-2 text-center">로그인</h1>
+          <p className="text-sm md:text-base text-center text-gray-100/80 mb-6">
+            개발자의 꿈을 현실로 만들어 보세요.
+          </p>
 
           {!isOnline && (
-            <div className="mb-4 p-3 bg-yellow-50 text-yellow-700 rounded-lg text-sm">
-              네트워크 연결이 없습니다.
+            <div className="mb-4 p-3 bg-yellow-500/10 text-yellow-100 rounded-lg text-sm border border-yellow-400/40">
+              네트워크 연결이 없습니다. 오프라인 상태에서는 로그인이 제한됩니다.
             </div>
           )}
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+            <div className="mb-4 p-3 bg-red-500/10 text-red-100 rounded-lg text-sm border border-red-400/40">
               {error}
             </div>
           )}
@@ -97,7 +112,7 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="login-email" className="block text-sm font-medium text-gray-900 mb-2">
-                이메일
+                <span className="text-white">이메일</span>
               </label>
               <input
                 type="email"
@@ -106,14 +121,14 @@ const LoginPage = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 border border-white/30 bg-white/5 text-white placeholder:text-gray-300/70 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-orange-400 outline-none transition-colors disabled:bg-white/10 disabled:cursor-not-allowed"
                 placeholder="your.email@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="login-password" className="block text-sm font-medium text-gray-900 mb-2">
-                비밀번호
+              <label htmlFor="login-password" className="block text-sm font-medium mb-2">
+                <span className="text-white">비밀번호</span>
               </label>
               <input
                 type="password"
@@ -122,7 +137,7 @@ const LoginPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 border border-white/30 bg-white/5 text-white placeholder:text-gray-300/70 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-orange-400 outline-none transition-colors disabled:bg-white/10 disabled:cursor-not-allowed"
                 placeholder="••••••••"
               />
             </div>
@@ -130,7 +145,7 @@ const LoginPage = () => {
             <div className="flex items-center justify-between">
               <Link
                 to="/forgot-password"
-                className="text-sm text-orange-600 hover:text-orange-700 transition-colors"
+                className="text-sm text-orange-300 hover:text-orange-200 transition-colors"
               >
                 비밀번호 찾기
               </Link>
@@ -139,7 +154,7 @@ const LoginPage = () => {
             <motion.button
               type="submit"
               disabled={isLoading || !isOnline}
-              className="w-full bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-orange-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-400 transition-colors disabled:bg-orange-300/60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/40"
               whileHover={!isLoading ? { scale: 1.02 } : {}}
               whileTap={!isLoading ? { scale: 0.98 } : {}}
             >
@@ -158,11 +173,11 @@ const LoginPage = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-100/80 text-sm">
               계정이 없으신가요?{' '}
               <Link
                 to="/signup"
-                className="text-orange-600 hover:text-orange-700 font-medium transition-colors"
+                className="text-orange-300 hover:text-orange-200 font-medium transition-colors"
               >
                 회원가입
               </Link>
@@ -172,7 +187,7 @@ const LoginPage = () => {
           <div className="mt-6 text-center">
             <Link
               to="/"
-              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-sm text-gray-100/70 hover:text-white transition-colors"
             >
               ← 홈으로 돌아가기
             </Link>
