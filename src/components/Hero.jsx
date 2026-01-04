@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
+import QuizModal from './QuizModal'
 
 const Hero = () => {
   const navigate = useNavigate()
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const [hasVideo, setHasVideo] = useState(false)
+  const [showQuizModal, setShowQuizModal] = useState(false)
   const videoRef = useRef(null)
   
   // 암기카드 앱 상태
@@ -211,7 +213,11 @@ const Hero = () => {
             />
 
             {/* iPhone 16 Pro 프레임 컨테이너 (실제 iPhone처럼) */}
-            <div className="relative w-[300px] h-[650px] bg-[#1a1a1a] rounded-[50px] shadow-[0_0_0_8px_#000,0_0_0_10px_#1a1a1a,0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden transform transition-transform duration-500 hover:scale-[1.02] hover:-rotate-1">
+            <motion.div
+              data-phone-mockup
+              className="relative w-[300px] h-[650px] bg-[#1a1a1a] rounded-[50px] shadow-[0_0_0_8px_#000,0_0_0_10px_#1a1a1a,0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden transform transition-transform duration-500 hover:scale-[1.02] hover:-rotate-1"
+              layoutId="phone-mockup"
+            >
               
               {/* iPhone 16 Pro 다이나믹 아일랜드 (실제 디자인) */}
               <div 
@@ -259,7 +265,7 @@ const Hero = () => {
                     /* 정보처리기사 필기 암기카드 앱 UI */
                     <motion.div 
                       className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-black relative overflow-hidden cursor-pointer"
-                      onClick={() => navigate('/memory-card')}
+                      onClick={() => setShowQuizModal(true)}
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.99 }}
                     >
@@ -407,14 +413,14 @@ const Hero = () => {
                       {/* 클릭 안내 오버레이 */}
                       <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity duration-300 z-30 rounded-[45px]">
                         <div className="bg-white/10 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/20">
-                          <p className="text-white text-sm font-semibold">클릭하여 앱 실행하기</p>
+                          <p className="text-white text-sm font-semibold">클릭하여 퀴즈 앱 실행하기</p>
                         </div>
                       </div>
                     </motion.div>
                   )}
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* 장식 요소: 떠다니는 카드 (Glass Card) */}
             <motion.div
@@ -540,6 +546,13 @@ const Hero = () => {
 
         </div>
       </div>
+
+      {/* 퀴즈 모달 */}
+      <QuizModal
+        isOpen={showQuizModal}
+        onClose={() => setShowQuizModal(false)}
+        initialExamType="정보처리기사"
+      />
     </section>
   )
 }
