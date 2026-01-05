@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import QuizModal from './QuizModal'
+import QuizErrorBoundary from './QuizErrorBoundary'
 
 const Hero = () => {
   const navigate = useNavigate()
@@ -548,11 +549,13 @@ const Hero = () => {
       </div>
 
       {/* 퀴즈 모달 */}
-      <QuizModal
-        isOpen={showQuizModal}
-        onClose={() => setShowQuizModal(false)}
-        initialExamType="정보처리기사"
-      />
+      <QuizErrorBoundary>
+        <QuizModal
+          isOpen={showQuizModal}
+          onClose={() => setShowQuizModal(false)}
+          initialExamType="정보처리기사"
+        />
+      </QuizErrorBoundary>
     </section>
   )
 }

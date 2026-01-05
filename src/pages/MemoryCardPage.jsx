@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from '../hooks/useToast'
 import Toast from '../components/common/Toast'
 import QuizModal from '../components/QuizModal'
+import QuizErrorBoundary from '../components/QuizErrorBoundary'
 
 const MemoryCardPage = () => {
   const navigate = useNavigate()
@@ -466,11 +467,13 @@ const MemoryCardPage = () => {
       <Toast toast={toast} onClose={hideToast} />
 
       {/* 퀴즈 모달 */}
-      <QuizModal
-        isOpen={showQuizModal}
-        onClose={() => setShowQuizModal(false)}
-        initialExamType="정보처리기사"
-      />
+      <QuizErrorBoundary>
+        <QuizModal
+          isOpen={showQuizModal}
+          onClose={() => setShowQuizModal(false)}
+          initialExamType="정보처리기사"
+        />
+      </QuizErrorBoundary>
     </motion.div>
   )
 }

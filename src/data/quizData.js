@@ -168,6 +168,9 @@ export const getExamStats = (examType) => {
   }
 }
 
+import { safeGetItem, safeSetItem } from '../utils/storage'
+import { validateScore, validateProgress } from '../utils/validation'
+
 // 로컬 스토리지 키
 export const STORAGE_KEYS = {
   progress: 'quiz_progress',
@@ -177,50 +180,125 @@ export const STORAGE_KEYS = {
 
 // 진행 상황 저장
 export const saveProgress = (examType, questionId, selectedAnswer, isCorrect) => {
-  const progress = JSON.parse(localStorage.getItem(STORAGE_KEYS.progress) || '{}')
-  if (!progress[examType]) {
-    progress[examType] = {}
+  try {
+    const progress = safeGetItem(STORAGE_KEYS.progress, {})
+    
+    if (!progress[examType]) {
+      progress[examType] = {}
+    }
+    
+    progress[examType][questionId] = {
+      selectedAnswer,
+      isCorrect,
+      timestamp: new Date().toISOString()
+    }
+    
+    const result = safeSetItem(STORAGE_KEYS.progress, progress)
+    
+    if (!result.success) {
+      console.error('Failed to save progress:', result.error)
+      return { success: false, error: result.error }
+    }
+    
+    return { success: true }
+  } catch (error) {
+    console.error('Error in saveProgress:', error)
+    return { success: false, error: error.message }
   }
-  progress[examType][questionId] = {
-    selectedAnswer,
-    isCorrect,
-    timestamp: new Date().toISOString()
-  }
-  localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(progress))
 }
 
 // 점수 저장
 export const saveScore = (examType, score, totalQuestions) => {
-  const scores = JSON.parse(localStorage.getItem(STORAGE_KEYS.scores) || '[]')
-  scores.push({
-    examType,
-    score,
-    totalQuestions,
-    percentage: Math.round((score / totalQuestions) * 100),
-    timestamp: new Date().toISOString()
-  })
-  localStorage.setItem(STORAGE_KEYS.scores, JSON.stringify(scores))
+  try {
+    // 데이터 검증
+    const scoreValidation = validateScore(score, totalQuestions)
+    if (!scoreValidation.valid) {
+      return { success: false, error: scoreValidation.error }
+    }
+
+    const scores = safeGetItem(STORAGE_KEYS.scores, [])
+    
+    const newScore = {
+      examType,
+      score,
+      totalQuestions,
+      percentage: Math.round((score / totalQuestions) * 100),
+      timestamp: new Date().toISOString()
+    }
+    
+    scores.push(newScore)
+    
+    // 최근 100개만 유지 (메모리 관리)
+    const trimmedScores = scores.slice(-100)
+    
+    const result = safeSetItem(STORAGE_KEYS.scores, trimmedScores)
+    
+    if (!result.success) {
+      console.error('Failed to save score:', result.error)
+      return { success: false, error: result.error }
+    }
+    
+    return { success: true, data: newScore }
+  } catch (error) {
+    console.error('Error in saveScore:', error)
+    return { success: false, error: error.message }
+  }
 }
 
 // 진행 상황 불러오기
 export const getProgress = (examType) => {
-  const progress = JSON.parse(localStorage.getItem(STORAGE_KEYS.progress) || '{}')
-  return progress[examType] || {}
+  try {
+    const progress = safeGetItem(STORAGE_KEYS.progress, {})
+    const examProgress = progress[examType] || {}
+    
+    // 데이터 검증
+    const validation = validateProgress(examProgress)
+    if (!validation.valid) {
+      return {}
+    }
+    
+    return examProgress
+  } catch (error) {
+    console.error('Error in getProgress:', error)
+    return {}
+  }
 }
 
 // 통계 가져오기
 export const getStatistics = (examType) => {
-  const progress = getProgress(examType)
-  const questions = quizData[examType] || []
-  const answered = Object.keys(progress).length
-  const correct = Object.values(progress).filter(p => p.isCorrect).length
-  
-  return {
-    total: questions.length,
-    answered,
-    correct,
-    incorrect: answered - correct,
-    accuracy: answered > 0 ? Math.round((correct / answered) * 100) : 0
+  try {
+    const progress = getProgress(examType)
+    const questions = quizData[examType] || []
+    
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return {
+        total: 0,
+        answered: 0,
+        correct: 0,
+        incorrect: 0,
+        accuracy: 0
+      }
+    }
+    
+    const answered = Object.keys(progress).length
+    const correct = Object.values(progress).filter(p => p && p.isCorrect === true).length
+    
+    return {
+      total: questions.length,
+      answered,
+      correct,
+      incorrect: answered - correct,
+      accuracy: answered > 0 ? Math.round((correct / answered) * 100) : 0
+    }
+  } catch (error) {
+    console.error('Error in getStatistics:', error)
+    return {
+      total: 0,
+      answered: 0,
+      correct: 0,
+      incorrect: 0,
+      accuracy: 0
+    }
   }
 }
 
